@@ -1,5 +1,5 @@
-# adsoft 
 import numpy as np
+import tensorflow as tf
 import os
 from scipy import stats
 
@@ -26,9 +26,9 @@ def circulo(num_datos=100, R=1, minimo=0, maximo=1, latitud=0, longitud=0):
 
 N = 250
 
-datos_brasilia = circulo(num_datos=N, R=1.5, latitud=-15.7801, longitud=-47.9292)
-datos_kazajistan = circulo(num_datos=N, R=1, latitud=48.0196, longitud=66.9237)
-X = np.concatenate([datos_brasilia, datos_kazajistan])
+datos_argentina = circulo(num_datos=N, R=1.5, latitud=-38.416097, longitud=-63.616672)
+datos_iran = circulo(num_datos=N, R=1, latitud=32.427908, longitud=53.688046)
+X = np.concatenate([datos_argentina, datos_iran])
 X = np.round(X, 3)
 print ('X : ', X)
 
@@ -51,7 +51,7 @@ linear_model = tf.keras.models.Sequential([tf.keras.layers.Dense(units=4, input_
 linear_model.compile(optimizer=tf.keras.optimizers.SGD(), loss=tf.keras.losses.MeanSquaredError)
 print(linear_model.summary())
 
-linear_model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=5)
+linear_model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=500)
 w = linear_model.layers[0].get_weights()[0]
 b = linear_model.layers[0].get_weights()[1]
 print('W 0', w)
@@ -65,19 +65,13 @@ b = linear_model.layers[2].get_weights()[1]
 print('W 2', w)
 print('b 2', b)
 
-print('predict city 1 : brasilia')
-brasilia_matrix = tf.constant([ [-43.598, -28.107],
-                           [-46.268, -14.62 ], 
-                           [-45.154, -3.249] ], tf.float32)
+print('predict city 1 : buenos_aires')
+print(linear_model.predict([[-34.61315, -58.37723]]).tolist())
+#printprint(linear_model.predict([[-34.61315, -58.37723]]).tolist())
 
-#print(linear_model.predict([[-43.598 -28.107][-46.268 -14.62 ] [-45.154 -3.249] [-46.52 -21.315][-41.719 -10.532][-48.291 -28.376]] ))   
-print(linear_model.predict(brasilia_matrix).tolist() )   
-print('predict city 2 : kazajistan')
-kazajistan_matrix = tf.constant([ [65.036, 55.836],
-                           [58.542, 51.449] ], tf.float32)
+print('predict city 2 : Shiraz')
+print(linear_model.predict([[29.61031, 52.53113]]).tolist()) 
+#print(linear_model.predict([[29.61031, 52.53113]]).tolist())   
 
-print(linear_model.predict(kazajistan_matrix).tolist() ) 
-#print(linear_model.predict([[-43.598 -28.107],[-46.268 -14.62]] ).tolist() )   
-
-# export_path = 'linear-model/1/'
-# tf.saved_model.save(linear_model, os.path.join('./',export_path))
+export_path = 'linear-model/1/'
+tf.saved_model.save(linear_model, os.path.join('./',export_path))
